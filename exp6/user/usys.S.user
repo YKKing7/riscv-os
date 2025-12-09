@@ -1,0 +1,51 @@
+#
+# usys.S - 用户态系统调用桩代码
+#
+# 每个系统调用的用户态入口点
+# 将系统调用号放入 a7 寄存器，然后执行 ecall 指令陷入内核
+#
+
+# 系统调用号定义
+.equ SYS_fork,      1
+.equ SYS_exit,      2
+.equ SYS_wait,      3
+.equ SYS_kill,      4
+.equ SYS_getpid,    5
+.equ SYS_sbrk,      6
+.equ SYS_read,      7
+.equ SYS_write,     8
+.equ SYS_open,      9
+.equ SYS_close,     10
+.equ SYS_sleep,     11
+.equ SYS_uptime,    12
+.equ SYS_mmap,      13
+.equ SYS_munmap,    14
+
+# 宏定义：生成系统调用桩代码
+.macro SYSCALL name, num
+.global \name
+\name:
+    li a7, \num         # 系统调用号写入 a7
+    ecall               # 陷入内核
+    ret                 # 返回，a0 中包含返回值
+.endm
+
+# 进程控制类系统调用
+SYSCALL fork,       SYS_fork
+SYSCALL exit,       SYS_exit
+SYSCALL wait,       SYS_wait
+SYSCALL kill,       SYS_kill
+SYSCALL getpid,     SYS_getpid
+SYSCALL sbrk,       SYS_sbrk
+SYSCALL sleep,      SYS_sleep
+SYSCALL uptime,     SYS_uptime
+
+# 文件操作类系统调用
+SYSCALL read,       SYS_read
+SYSCALL write,      SYS_write
+SYSCALL open,       SYS_open
+SYSCALL close,      SYS_close
+
+# 内存管理类系统调用
+SYSCALL mmap,       SYS_mmap
+SYSCALL munmap,     SYS_munmap
